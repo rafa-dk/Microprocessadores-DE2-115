@@ -72,50 +72,31 @@ _start:
 	wrctl status, r9*/
 
 POLLING:
-	ldwio r7, DATA(r10)	#leitura de data
-	mov r9, r7		
-	andi r9, r9, 0x8000	#mascara para rvalid
-	beq r9, r0, POLLING	#caso !rvalid retorna para POLLING
-	andi r9, r7, 0xff	#armazena dado
 
-WSPACE:
-	ldwio r12, CONTROL(r10)	#leitura de control
-	mov r11, r12		
-	andhi r11, r11, 0xffff	#mascara para wspace
-	beq r11, r0, WSPACE	#caso !wspace retorna para POLLING
-	stwio r9, DATA(r10)	#escreve dado em terminal do altera
+	call UART
 	
-	addi r9, r9,-0x30		#converte para decimal
-	beq r9, r0, LED
+	addi r4, r4,-0x30		#converte para decimal
+	beq r4, r0, LED
 
 	addi r8, r0, 1
-	beq r9, r8, TRIANGULAR
+	beq r4, r8, TRIANGULAR
 
 	addi r8, r0, 2
-	beq r9, r8, ANIMACAO
+	beq r4, r8, ANIMACAO
 
 	br POLLING
 
 
 LED:
-	#call ARQLED
-	addi r8, r0, 97
-	#ldw r8, (r8)
-	stwio r8, DATA(r10)
+	call ARQLED
 	br POLLING
 
 TRIANGULAR:
-	#call ARQTRI
-	addi r8, r0, 98
-	#ldw r8, (r8)
-	stwio r8, DATA(r10)
+	call ARQTRI
 	br POLLING
 
 ANIMACAO:
-	#call ARQANI
-	addi r8, r0, 99
-	#ldw r8, (r8)
-	stwio r8, DATA(r10) 
+	call ARQANI
 	br POLLING
 
 

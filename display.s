@@ -47,7 +47,7 @@ DISPLAY_LOOP:
     #Converte o digito (0-9) para o codigo do display de 7 segmentos
     movia r8, SETE_SEG      #Carrega o endereco da tabela de conversao
     add r8, r8, r7          #Adiciona o digito como um indice
-    ldb r8, (r8)           #Carrega o byte do padrao de 7 segmentos
+    ldb r8, 0(r8)           #Carrega o byte do padrao de 7 segmentos
 
     #Desloca o padrao para a posicao correta (HEX0=0, HEX1=8, HEX2=16, HEX3=24)
     #Multiplicamos o contador (r10) por 8 para saber quantos bits deslocar
@@ -80,5 +80,3 @@ END_DISPLAY:
 SETE_SEG:
 .byte 0x3F, 0x06, 0x5B, 0x4F, 0x66, 0x6D, 0x7D, 0x07, 0x7F, 0x6F
 #Caracteres para o display: 0,1,2,3,4,5,6,7,8,9
-
-
