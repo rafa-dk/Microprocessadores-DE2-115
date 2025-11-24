@@ -3,6 +3,20 @@
 
 ARQLED:
 
+    subi sp, sp, 40
+    stw ra, 36(sp)
+	stw fp, 32(sp)
+    stw r5, 28(sp)
+    stw r6, 24(sp)
+	stw r7, 20(sp)
+	stw r8, 16(sp)
+    stw r9, 12(sp)
+    stw r10, 8(sp)
+    stw r11, 4(sp)
+    stw r12, 0(sp)
+
+	addi fp, sp, 32
+
 #--------leitura do comando------------
 # 1. leitura do segundo dígito: '0' ou '1'
     call UART    #r4 = '0' ou '1'
@@ -41,7 +55,7 @@ LIGA_LED:
     sll r12, r12, r4         #cria máscara 1 << xx
     or r10, r10, r12         #liga o bit
     stwio r10, 0(r9)
-    ret
+    br FIM_LED
 
 #------apaga o led---------
 DESLIGA_LED:
@@ -50,4 +64,19 @@ DESLIGA_LED:
     nor r12, r0, r12         #inverte máscara
     and r10, r10, r12        #limpa o bit
     stwio r10, 0(r9)
+    br FIM_LED
+
+FIM_LED:
+    ldw ra, 36(sp)
+    ldw fp, 32(sp)
+    ldw r5, 28(sp)
+    ldw r6, 24(sp)
+    ldw r7, 20(sp)
+    ldw r8, 16(sp)
+    ldw r9, 12(sp)
+    ldw r10, 8(sp)
+    ldw r11, 4(sp)
+    ldw r12, 0(sp)
+    addi sp, sp, 40
+
     ret
