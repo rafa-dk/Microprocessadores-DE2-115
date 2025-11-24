@@ -1,7 +1,7 @@
 /****
 RTI
 ****/
-.org 0x20
+/*.org 0x20
 
 #PROLOGO
 	addi sp, sp, -4
@@ -33,7 +33,7 @@ EXT_IRQ1:
 
 FIM_KEY:
 	ret
-
+*/
 
 /****
 MAIN
