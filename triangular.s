@@ -36,8 +36,8 @@ CONVERTER:
 	ldwio r4, (r10)
 	andi r4, r4, 0xFF	#separa os 8 primeiros bits
 
-	#Prepara a pilha para armazenar 3 digitos
-    subi sp, sp, 12
+	#Prepara a pilha para armazenar 8 digitos (32 bytes)
+    subi sp, sp, 32
 
     movia r5, 10        #Carrega o divisor 10 em r5
     mov r16, r0         #r16 sera nosso contador de digitos
@@ -75,6 +75,8 @@ O registrador r16 contem a quantidade de digitos - 1
 call DISPLAY
 
 # Libera o espaco alocado na pilha para os digitos
+addi sp, sp, 32
+
 FIM_TRI:
 
     ldw ra, 40(sp)
@@ -92,7 +94,3 @@ FIM_TRI:
     addi sp, sp, 44
 
     ret
-
-addi sp, sp, 12
-
-ret
