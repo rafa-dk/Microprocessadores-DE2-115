@@ -2,6 +2,20 @@
 
 .global ARQTRI
 ARQTRI:
+    subi sp, sp, 44
+    stw ra, 40(sp)
+    stw fp, 36(sp)
+    stw r4, 32(sp)
+    stw r5, 28(sp)
+    stw r6, 24(sp)
+    stw r7, 20(sp)
+    stw r8, 16(sp)
+    stw r10, 12(sp)
+    stw r15, 8(sp)
+    stw r17, 4(sp)
+    stw r20, 0(sp)
+
+    addi fp, sp, 36
 
 	movi r8, 0		#acumulador = 0
 	movi r7, 0		#contador = 1
@@ -61,6 +75,24 @@ O registrador r16 contem a quantidade de digitos - 1
 call DISPLAY
 
 # Libera o espaco alocado na pilha para os digitos
+FIM_TRI:
+
+    ldw ra, 40(sp)
+    ldw fp, 36(sp)
+    ldw r4, 32(sp)
+    ldw r5, 28(sp)
+    ldw r6, 24(sp)
+    ldw r7, 20(sp)
+    ldw r8, 16(sp)
+    ldw r10, 12(sp)
+    ldw r15, 8(sp)
+    ldw r17, 4(sp)
+    ldw r20, 0(sp)
+
+    addi sp, sp, 44
+
+    ret
+
 addi sp, sp, 12
 
 ret
