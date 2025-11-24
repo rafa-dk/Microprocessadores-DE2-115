@@ -41,11 +41,14 @@ MAIN
 
 .equ DATA, 0x0000
 .equ CONTROL, 0x0004
+.equ STACK, 0x10000
 
 .global _start
 
 _start:
-
+	#Inicializa o Stack Pointer (sp)
+	movia sp, STACK
+	mov fp, sp
 	movia r10, 0x10001000
 /*
 #habilitar interrupcoes
