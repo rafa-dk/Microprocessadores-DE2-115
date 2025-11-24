@@ -6,9 +6,9 @@
 
 UART:
 	subi sp, sp, 20
-    	stw ra, 0(sp)
-    	stw r7, 4(sp)
-    	stw r10, 8(sp)
+    stw ra, 0(sp)
+    stw r7, 4(sp)
+    stw r10, 8(sp)
 	stw r11, 12(sp)
 	stw r12, 16(sp)
 
@@ -30,9 +30,9 @@ WSPACE:
 
 END_UART:
 	ldw ra, 0(sp)
-    	ldw r7, 4(sp)
-    	ldw r10, 8(sp)
+    ldw r7, 4(sp)
+    ldw r10, 8(sp)
 	ldw r11, 12(sp)
 	ldw r12, 16(sp)
-    	addi sp, sp, 20
-    	ret
+    addi sp, sp, 20
+    ret
