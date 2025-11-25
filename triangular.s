@@ -1,66 +1,62 @@
 .equ ALAVANCAS, 0x10000040
 
 .global ARQTRI
+
 ARQTRI:
+    # Prologo
+    subi sp, sp, 40
+    stw ra, 36(sp)
+    stw fp, 32(sp)
+    stw r16, 28(sp)
+    stw r17, 24(sp)
+    stw r18, 20(sp)
+    stw r19, 16(sp)
+    stw r20, 12(sp)
+    
+    addi fp, sp, 40
 
-	movi r8, 0		#acumulador = 0
-	movi r7, 0		#contador = 1
-	movi r15, 0		#numeros armazenados (num)
-	movi r16, 0		#result_media = 0
-	movi r17, 0xFFFFFF00	#mascara para num, usaremos com and ao inves de andi pois em andi o imediato tem q ser <= 16 bits
-	movi r20, 0x4
+    # Inicializacao
+    movi r16, 0         # Contador de digitos
+    movi r19, 10        # Divisor (10)
+    movi r20, 4         # Tamanho da palavra (4 bytes)
 
-/*
-Assumimos que o valor das alavancas (0-255) esta em r4
-r5 sera usado para o divisor (10)
-r6 guardara o quociente
-r7 guardara o resto (o dígito decimal)
-Usaremos a pilha (stack) para armazenar os digitos temporariamente
-*/
 CONVERTER:
-	movia r10, ALAVANCAS
-	ldwio r4, (r10)
-	andi r4, r4, 0xFF	#separa os 8 primeiros bits
-
-	#Prepara a pilha para armazenar 3 digitos
-    subi sp, sp, 12
-
-    movia r5, 10        #Carrega o divisor 10 em r5
-    mov r16, r0         #r16 sera nosso contador de digitos
-
+    movia r10, ALAVANCAS
+    ldwio r18, (r10)    # Le valor das chaves para r18 (Dividend)
+    andi r18, r18, 0xFF # Mascara para 8 bits
 
 DIVISAO:
-    #Divide o numero por 10
-    div r6, r4, r5      #r6 = r4 / 10 (quociente)
+    # Divide r18 por 10
+    # Usamos r18 (callee-saved) para garantir que a chamada de div (se for macro/funcao)
+    # nao corrompa o valor do dividendo.
+    div r6, r18, r19    # r6 = r18 / 10 (quociente)
 
-    #Calcula o resto
-    mul r7, r6, r5      #r7 = quociente * 10
-    sub r7, r4, r7      #r7 = r4 - (quociente * 10) -> este e o resto (digito)
+    # Calcula o resto: resto = numero - (quociente * 10)
+    mul r7, r6, r19     # r7 = quociente * 10
+    sub r7, r18, r7     # r7 = r18 - r7 (resto)
 
-    #Empilha o digito encontrado
-    #O offset e calculado com base no numero de digitos ja processados
-    mul r8, r16, r20    #r8 = r16 * 4 (r20 ja tem 4)
-    add r8, sp, r8      #r8 = sp + offset
-    stw r7, 0(r8)       #Salva o digito na pilha
+    # Armazena o digito no buffer
+    mul r8, r16, r20    # Offset = contador * 4
+    add r8, sp, r8     # Endereco = Base + Offset
+    stw r7, (r8)       # Salva o digito
 
-    addi r16, r16, 1    #Incrementa o contador de digitos
+    addi r16, r16, 1    # Incrementa contador
 
-    mov r4, r6          #O novo numero a ser dividido e o quociente
-    bne r4, r0, DIVISAO #Se o quociente nao for zero, continua o loop
+    mov r18, r6         # Atualiza o numero com o quociente
+    bne r18, r0, DIVISAO # Se quociente != 0, continua
 
-/*
-Fim da conversao
-Neste ponto, os digitos estao na pilha
-Por exemplo, se o numero era 123:
-sp[0] -> 3 (unidade)
-sp[4] -> 2 (dezena)
-sp[8] -> 1 (centena)
-O registrador r16 contem a quantidade de digitos - 1
-*/
+    # Chama DISPLAY
+    call DISPLAY
 
-call DISPLAY
+FIM_TRI:
+    # Epilogo
+    ldw ra, 36(sp)
+    ldw fp, 32(sp)
+    ldw r16, 28(sp)
+    ldw r17, 24(sp)
+    ldw r18, 20(sp)
+    ldw r19, 16(sp)
+    ldw r20, 12(sp)
+    addi sp, sp, 40
 
-# Libera o espaco alocado na pilha para os digitos
-addi sp, sp, 12
-
-ret
+    ret

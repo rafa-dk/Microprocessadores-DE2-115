@@ -1,5 +1,5 @@
-.global ANIMACAO
-ANIMACAO:
+.global ARQANI
+ARQANI:
 
     movi r9, 0
 	movi r8, 0		#topo da pilha
