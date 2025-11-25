@@ -13,7 +13,7 @@ UART:
 	stw r11, 4(sp)
 	stw r12, 0(sp)
 
-	addi fp, sp, 16
+	addi fp, sp, 24
 
 	movia r10, UART_BASE
 POLLING:

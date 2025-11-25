@@ -15,7 +15,7 @@ ARQLED:
     stw r11, 4(sp)
     stw r12, 0(sp)
 
-	addi fp, sp, 32
+	addi fp, sp, 40
 
 #--------leitura do comando------------
 # 1. leitura do segundo dígito: '0' ou '1'
