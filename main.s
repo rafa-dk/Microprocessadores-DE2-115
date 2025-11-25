@@ -50,6 +50,8 @@ _start:
 	movia sp, STACK
 	mov fp, sp
 	movia r10, 0x10001000
+	mov r5, r0
+	movi r7, 20
 /*
 #habilitar interrupcoes
 	#1. setar timer
@@ -73,6 +75,24 @@ _start:
 	#3. seta o bit PIE do processador
 	movi r9, 1
 	wrctl status, r9*/
+
+INICIO:
+
+WSPACE:
+	ldwio r12, CONTROL(r10)		#leitura de control
+	mov r11, r12		
+	andhi r11, r11, 0xffff		#mascara para wspace
+	beq r11, r0, WSPACE		#caso !wspace retorna
+	movia r4, INICIO_CHAR
+	muli r6, r5, 4
+	add r4, r4, r6
+	ldw r4, (r4)			#carrega caracter inicio
+	stwio r4, DATA(r10)		#escreve dado em terminal do altera
+	addi r5, r5, 1
+	bne r5, r7, WSPACE
+	#escrever caracter na memoria
+
+
 
 POLLING:
 
@@ -105,32 +125,6 @@ ANIMACAO:
 	call ARQANI
 	br POLLING
 
+INICIO_CHAR:
+.word 69,110,116,114,101,32,99,111,109,32,111,32,99,111,109,97,110,100,111,58
 
-
-/*
-	1/2s -> 25.000.000
-	
-	movia r8, 0x10002000	#timer
-	movia r9, 25000000	
-	
-	andi r10, r9, 0xFFFF
-	swtio r10, 8(r8)		#low
-
-	srli r10, r9, 16
-	stwio r10, 12(r8)	#high
-
-vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-	stwio r9, UART
-_start:
-
-	andi r9, r10, 0xFF
-
-	stwio r9, UART
-
-	movia r11, LAST_CHAR
-	stw r9, (r11)	#salva ultimo char na memoria
-
-LAST_CHAR:
-.word 00
-
-*/
