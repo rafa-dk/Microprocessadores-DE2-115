@@ -1,41 +1,4 @@
 /****
-RTI
-****/
-.org 0x20
-
-#PROLOGO
-	addi sp, sp, -4
-	stw ra, (sp)
-#--------------------------
-	rdctl et, ipending
-	beq et, r0, OTHER_EXCEPTIONS
-	subi ea, ea, 4
-	
-	andi r13, et, 1 
-	beq r13, r0, OTHER_INTERRUPTS
-	call EXT_IRQ1
-
-OTHER_INTERRUPTS:
-	br FIM_RTI
-
-OTHER_EXCEPTIONS:
-#EPILOGO
-FIM_RTI:
-	ldw ra, (sp)
-	addi sp, sp, 4
-	eret
-
-
-#ROTINA KEY
-EXT_IRQ1:
-
-	
-
-FIM_KEY:
-	ret
-
-
-/****
 MAIN
 ****/
 
