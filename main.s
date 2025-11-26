@@ -102,7 +102,7 @@ BOTAO_IRQ:
 	br FIM_RTI
 
 BOTAO_2:
-	movia r11, POWER_BUTTON_ANIMACAO
+	movia r11, STOP_BUTTON_ANIMACAO
 	xori r12, r12, 1
 	stw r12, (r11)
 	ldw r12, (r11)

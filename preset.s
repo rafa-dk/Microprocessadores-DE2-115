@@ -48,6 +48,7 @@ SETE_SEG:
 .global LED_RED
 .global DISPLAYS_BASE
 .global BUTTOM_BASE
+.global BOTOES
 .global INICIO_CHAR
 .global ORDEM_ANIMACAO
 .global DIRECAO_ANIMACAO

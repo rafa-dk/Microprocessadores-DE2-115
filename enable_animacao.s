@@ -1,5 +1,5 @@
 .global RESUME_ANIMACAO
-.global PAUSE_ANIMACAO
+.global STOP_ANIMACAO
 
 STOP_ANIMACAO:
     # Prologo
