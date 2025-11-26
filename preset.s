@@ -1,3 +1,23 @@
+.global DATA
+.global CONTROL
+.global UART_BASE
+.global ALAVANCAS
+.global STACK
+.global LED_RED
+.global DISPLAYS_BASE
+
+.equ DATA, 0x0000
+.equ CONTROL, 0x0004
+.equ UART_BASE, 0x10001000 	#Endereco base da UART
+.equ ALAVANCAS, 0x10000040
+.equ STACK, 0x10000
+.equ LED_RED, 0x10000000   #Endereco do registrador dos LEDs
+.equ DISPLAYS_BASE, 0x10000020  #Endereco base dos displays de 7 segmentos
+
+
+
+
+
 .global INICIO_CHAR
 INICIO_CHAR:
 .word 69,110,116,114,101,32,99,111,109,32,111,32,99,111,109,97,110,100,111,58

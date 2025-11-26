@@ -1,8 +1,3 @@
-/****
-MAIN
-****/
-.equ DISPLAYS_BASE, 0x10000020  #Endereco base dos displays de 7 segmentos
-
 .global DISPLAY
 
 /*

@@ -62,10 +62,6 @@ FIM_KEY:
 MAIN
 ****/
 
-.equ DATA, 0x0000
-.equ CONTROL, 0x0004
-.equ STACK, 0x10000
-
 .global _start
 
 _start:

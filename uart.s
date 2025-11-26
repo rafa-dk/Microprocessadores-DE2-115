@@ -1,9 +1,5 @@
 .global UART
 
-.equ DATA, 0x0000
-.equ CONTROL, 0x0004
-.equ UART_BASE, 0x10001000 	#Endereco base da UART
-
 UART:
     subi sp, sp, 24
     stw ra, 20(sp)

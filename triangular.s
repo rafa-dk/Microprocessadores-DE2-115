@@ -1,5 +1,3 @@
-.equ ALAVANCAS, 0x10000040
-
 .global ARQTRI
 
 ARQTRI:

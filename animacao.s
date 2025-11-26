@@ -1,8 +1,6 @@
 .global ARQANI
 .global ORDEM_ANIMACAO
 
-.equ UART_VALID, 0x10001000 
-
 ARQANI:
     # Prologo
     subi sp, sp, 72
@@ -43,7 +41,7 @@ ARQANI:
 	wrctl status, r9
 
     movi r4, 0
-    movia r5, UART_VALID
+    movia r5, UART_BASE
     mov r6, r0
 	movi r8, 0		#topo da pilha
 	movi r7, 0		#digito
