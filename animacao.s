@@ -27,28 +27,8 @@ ARQANI:
 	movi r8, 0		#topo da pilha
 	movi r7, 0		#digito
 
-    #habilitar interrupcoes
-	#1. setar timer
-	#-> interrupt timer (0x10002000)
-	movia r10, 0x10002000	#timer
-	movia r9, 10000000     #200ms
-
-	andi r6, r9, 0xFFFF
-	stwio r6, 8(r10)	#low
-
-	srli r6, r9, 16
-	stwio r6, 12(r10)	#high
-
-	movia r9, 0b111
-	stwio r9, 4(r10)
-
-	#2. setar o respectivo no bit no ienable (IRQ 1) 
-	movia r9, 0b1
-	wrctl ienable, r9	#habilita INT no PB
-
-	#3. seta o bit PIE do processador
-	movi r9, 1
-	wrctl status, r9
+    call RESUME_ANIMACAO
+    call BUTTOM_ON
 
 ANIMACAO_LOOP:
     call UART
@@ -61,28 +41,9 @@ ANIMACAO_LOOP:
     beq r4, r9, FIM_ANIMACAO
     br ANIMACAO_LOOP
 
-
-# Libera o espaco alocado na pilha para os digitos
 FIM_ANIMACAO:
-
-
-    # DESABILITAR interrupções do TIMER
-    movia r10, 0x10002000     # base do timer
-
-    # 1. Desliga o timer e desativa ITO (bit 2)
-    stwio r0, 4(r10)          # CONTROL = 0 -> timer parado, sem interrupção
-    stwio r0, 0(r10)          # Limpa bit TO (Timeout) para garantir que nao haja INT pendente
-
-    # 2. Limpa o bit da interrupção do timer em IENABLE (assumindo IRQ 0)
-    rdctl r6, ienable
-    andi  r6, r6, 0b11111110     # limpa bit 0
-    wrctl ienable, r6
-
-    # 3. desabilitar todas as interrupções globais:
-    rdctl r6, status
-    andi  r6, r6, 0xFFFE        # zera bit PIE
-    wrctl status, r6
-
+    call STOP_ANIMACAO
+    call BUTTOM_OFF
 
 #Apagar Display
     movi r15, 0		#num de iteracoes

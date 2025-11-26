@@ -26,8 +26,10 @@ RTI
 	subi ea, ea, 4
 	
 	andi r13, et, 1 
-	beq r13, r0, OTHER_INTERRUPTS
-	call EXT_IRQ1
+	bne r13, r0, TIMER_IRQ
+	andi r13, et, 2
+	bne r13, r0, BOTAO_IRQ
+	call OTHER_INTERRUPTS
 
 OTHER_INTERRUPTS:
 	br FIM_RTI
@@ -50,15 +52,16 @@ FIM_RTI:
 	addi sp, sp, 80
 	
 	eret
+
 #ROTINA TIMER
-EXT_IRQ1:
+TIMER_IRQ:
     # Limpa o bit de timeout do timer
     movia r10, 0x10002000
     stwio r0, 0(r10)    # Escreve 0 no status para limpar o bit TO
+	movia r12, DIRECAO_ANIMACAO
+	ldw r12, (r12)
 
-	DIREITA:
-    #Empilha o digito
-
+DIREITA:
     movia r7, ORDEM_ANIMACAO
     slli r8, r15, 2    #r8 = r15 * 4 (r20 ja tem 4)
     add r7, r7, r8
@@ -72,15 +75,49 @@ EXT_IRQ1:
     bne r15, r16, DIREITA #Se r15 nao eh 8, continua o loop
 
     call DISPLAY
+	mov r15, r0
+	beq r12, r0, LEFT
+	
+RIGHT:
     call SHIFT_R
-    mov r15, r0
-
+	br FIM_RTI
+LEFT:
+	call SHIFT_L
     br FIM_RTI
 
-	
+BOTAO_IRQ:
+	movia r9, BOTOES	#BOTOES
 
-FIM_KEY:
-	ret
+	#Key 1 ou Key 2
+	ldwio r11, (r9)
+	andi r12, r11, 0b100	#eh Key 2?
+	bne r12, r0, BOTAO_2
+
+	movia r11, DIRECAO_ANIMACAO
+	ldw r12, (r11)
+	xor r12, r12, 1
+	stw r12, (r11)
+
+	stwio r0, (r9)	#limpa edge capture
+	br FIM_RTI
+
+BOTAO_2:
+	movia r11, POWER_BUTTON_ANIMACAO
+	ldw r12, (r11)
+	xor r12, r12, 1
+	stw r12, (r11)
+
+	stwio r0, (r9)	#limpa edge capture
+
+	beq	r12, r0, STOP
+
+RESUME:
+	call RESUME_ANIMACAO
+	br FIM_RTI
+
+STOP:
+	call STOP_ANIMACAO
+	br FIM_RTI
 
 
 /****

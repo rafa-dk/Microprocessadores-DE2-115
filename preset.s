@@ -5,12 +5,20 @@
 .equ STACK, 0x10000
 .equ LED_RED, 0x10000000
 .equ DISPLAYS_BASE, 0x10000020
+.equ BUTTOM_BASE, 0x10000058
+.equ BOTOES, 0x1000005c
 
 INICIO_CHAR:
 .word 69,110,116,114,101,32,99,111,109,32,111,32,99,111,109,97,110,100,111,58,32
 
 ORDEM_ANIMACAO:
 .word 6,2,0,2,12,11,10,12
+
+DIRECAO_ANIMACAO:
+.word 1   #0 -> esquerda | 1 -> direita
+
+STOP_BUTTON_ANIMACAO:
+.word 1   #0 -> desligado | 1 -> ligado
 
 /*
 Tabela de conversao para 7 segmentos
@@ -39,6 +47,9 @@ SETE_SEG:
 .global STACK
 .global LED_RED
 .global DISPLAYS_BASE
+.global BUTTOM_BASE
 .global INICIO_CHAR
-.global SETE_SEG
 .global ORDEM_ANIMACAO
+.global DIRECAO_ANIMACAO
+.global STOP_BUTTON_ANIMACAO
+.global SETE_SEG
