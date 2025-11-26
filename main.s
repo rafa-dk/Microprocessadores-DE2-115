@@ -148,7 +148,6 @@ SPACE_TRI:
 	beq r11, r0, SPACE_TRI		#caso !wspace retorna
 	movi r4, 32
 	stwio r4, DATA(r10)		#escreve dado em terminal do altera
-	bne r5, r7, SPACE_TRI
 
 	call ARQTRI
 	br POLLING
