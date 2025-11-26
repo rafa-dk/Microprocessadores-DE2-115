@@ -5,22 +5,21 @@ RTI
 
 #PROLOGO
 # Salva contexto (registradores voláteis que a ISR ou chamadas dentro dela podem modificar)
-	subi sp, sp, 48
-	stw ra, 44(sp)
-	stw fp, 40(sp)
-    stw ra, 36(sp)
-    stw r4, 32(sp)
-    stw r5, 28(sp)
-    stw r6, 24(sp)
-    stw r7, 20(sp)
-    stw r8, 16(sp)
-    stw r9, 12(sp)
-    stw r10, 8(sp)
-    stw r11, 4(sp)
-    stw r12, 0(sp)
+	subi sp, sp, 80
+	stw ra, 76(sp)
+	stw fp, 72(sp)
+    stw r4, 68(sp)
+    stw r5, 64(sp)
+    stw r6, 60(sp)
+    stw r7, 56(sp)
+    stw r8, 52(sp)
+    stw r9, 48(sp)
+    stw r10, 44(sp)
+    stw r11, 40(sp)
+    stw r12, 36(sp)
     # r15 e r16 sao usados como variaveis globais da animacao, nao salvamos para manter o estado
 
-	addi fp, sp, 48
+	addi fp, sp, 80
 #--------------------------
 	rdctl et, ipending
 	beq et, r0, OTHER_EXCEPTIONS
@@ -37,22 +36,20 @@ OTHER_EXCEPTIONS:
 #EPILOGO
 FIM_RTI:
 	#Restaura contexto
-	ldw ra, 44(sp)
-	ldw fp, 40(sp)
-    ldw r4, 36(sp)
-    ldw r5, 32(sp)
-    ldw r6, 28(sp)
-    ldw r7, 24(sp)
-    ldw r8, 20(sp)
-    ldw r9, 16(sp)
-    ldw r10, 12(sp)
-    ldw r11, 8(sp)
-    ldw r12, 4(sp)
-	addi sp, sp, 48
+	ldw ra, 76(sp)
+	ldw fp, 72(sp)
+    ldw r4, 68(sp)
+    ldw r5, 64(sp)
+    ldw r6, 60(sp)
+    ldw r7, 56(sp)
+    ldw r8, 52(sp)
+    ldw r9, 48(sp)
+    ldw r10, 44(sp)
+    ldw r11, 40(sp)
+    ldw r12, 36(sp)
+	addi sp, sp, 80
 	
 	eret
-
-
 #ROTINA TIMER
 EXT_IRQ1:
     # Limpa o bit de timeout do timer
@@ -67,7 +64,7 @@ EXT_IRQ1:
     add r7, r7, r8
     ldw r7, (r7)
 
-    add r8, fp, r8      #r8 = sp + offset
+    add r8, sp, r8      #r8 = sp + offset
     stw r7, (r8)       #Salva o digito na pilha
 
     addi r15, r15, 1    #Incrementa o contador de digitos
