@@ -7,6 +7,8 @@ RTI
 	addi sp, sp, -8
 	stw ra, 4(sp)
 	stw fp, 0(sp)
+
+	addi fp, sp, 0	
 #--------------------------
 	rdctl et, ipending
 	beq et, r0, OTHER_EXCEPTIONS
@@ -48,7 +50,9 @@ EXT_IRQ1:
     call DISPLAY
     call SHIFT
     mov r15, r0
-    br DIREITA
+	movia r9, 0b0101
+	stwio r9, 4(r10)
+    br FIM_RTI
 
 	
 
@@ -128,4 +132,3 @@ ANIMACAO:
 
 INICIO_CHAR:
 .word 69,110,116,114,101,32,99,111,109,32,111,32,99,111,109,97,110,100,111,58
-

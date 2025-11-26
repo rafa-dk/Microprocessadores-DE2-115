@@ -22,17 +22,17 @@ ARQANI:
     #habilitar interrupcoes
 	#1. setar timer
 	#-> interrupt timer (0x10002000)
-	movia r8, 0x10002000	#timer
-	movia r9, 10000000      #200ms
-	
+	movia r10, 0x10002000	#timer
+	movia r9, 100000000     #200ms
+
 	andi r6, r9, 0xFFFF
-	stwio r6, 8(r8)		#low
+	stwio r6, 8(r10)	#low
 
 	srli r6, r9, 16
-	stwio r6, 12(r8)		#high
+	stwio r6, 12(r10)	#high
 
-	movia r9, 0b111
-	stwio r9, 4(r8)
+	movia r9, 0b101
+	stwio r9, 4(r10)
 
 	#2. setar o respectivo no bit no ienable (IRQ 1) 
 	movia r9, 0b1
@@ -53,7 +53,7 @@ ARQANI:
 
 ANIMACAO_LOOP:
     ldw r4, (r5)
-    bne r4, r0, FIM_ANIMACAO
+    #bne r4, r0, FIM_ANIMACAO
     br ANIMACAO_LOOP
 
 
@@ -61,10 +61,10 @@ ANIMACAO_LOOP:
 FIM_ANIMACAO:
 
     # DESABILITAR interrupções do TIMER
-    movia r8, 0x10002000     # base do timer
+    movia r10, 0x10002000     # base do timer
 
     # 1. Desliga o timer e desativa ITO (bit 2)
-    stwio r0, 4(r8)          # CONTROL = 0 -> timer parado, sem interrupção
+    stwio r0, 4(r10)          # CONTROL = 0 -> timer parado, sem interrupção
 
     # 2. Limpa o bit da interrupção do timer em IENABLE (assumindo IRQ 0)
     rdctl r6, ienable
