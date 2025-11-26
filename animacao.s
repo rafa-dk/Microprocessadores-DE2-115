@@ -17,6 +17,16 @@ ARQANI:
     
     addi fp, sp, 72
 
+    # Inicializa variaveis GLOBAIS da animacao (usadas na ISR) ANTES de habilitar interrupcoes
+    movi r15, 0		#num de iteracoes
+	movi r16, 0x8	#qtd de loops
+    movi r20, 0x4
+    movi r4, 0
+    movia r5, UART_BASE
+    mov r6, r0
+	movi r8, 0		#topo da pilha
+	movi r7, 0		#digito
+
     #habilitar interrupcoes
 	#1. setar timer
 	#-> interrupt timer (0x10002000)
@@ -40,15 +50,6 @@ ARQANI:
 	movi r9, 1
 	wrctl status, r9
 
-    movi r4, 0
-    movia r5, UART_BASE
-    mov r6, r0
-	movi r8, 0		#topo da pilha
-	movi r7, 0		#digito
-    movi r15, 0		#num de iteracoes
-	movi r16, 0x8	#qtd de loops
-    movi r20, 0x4
-
 ANIMACAO_LOOP:
     call UART
     movi r9, 0x2
@@ -69,6 +70,7 @@ FIM_ANIMACAO:
 
     # 1. Desliga o timer e desativa ITO (bit 2)
     stwio r0, 4(r10)          # CONTROL = 0 -> timer parado, sem interrupção
+    stwio r0, 0(r10)          # Limpa bit TO (Timeout) para garantir que nao haja INT pendente
 
     # 2. Limpa o bit da interrupção do timer em IENABLE (assumindo IRQ 0)
     rdctl r6, ienable
