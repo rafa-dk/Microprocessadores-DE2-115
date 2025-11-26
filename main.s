@@ -93,7 +93,7 @@ _start:
 	#Inicializa o Stack Pointer (sp)
 	movia sp, STACK
 	mov fp, sp
-	movia r10, 0x10001000
+	movia r10, UART_BASE
 	mov r5, r0
 	movi r7, 20
 
@@ -141,12 +141,12 @@ TRIANGULAR:
 	bne r4, r0, POLLING
 	
 SPACE_TRI:
+	movia r10, UART_BASE
 	ldwio r12, CONTROL(r10)		#leitura de control
 	mov r11, r12		
 	andhi r11, r11, 0xffff		#mascara para wspace
 	beq r11, r0, SPACE_TRI		#caso !wspace retorna
 	movi r4, 32
-	ldw r4, (r4)			#carrega caracter inicio
 	stwio r4, DATA(r10)		#escreve dado em terminal do altera
 	bne r5, r7, SPACE_TRI
 
