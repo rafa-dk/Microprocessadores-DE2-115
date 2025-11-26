@@ -7,6 +7,8 @@ RTI
 	addi sp, sp, -8
 	stw ra, 4(sp)
 	stw fp, 0(sp)
+	
+	addi fp, sp, 8
 #--------------------------
 	rdctl et, ipending
 	beq et, r0, OTHER_EXCEPTIONS
@@ -48,7 +50,7 @@ EXT_IRQ1:
     call DISPLAY
     call SHIFT
     mov r15, r0
-    br DIREITA
+    br FIM_RTI
 
 	
 

@@ -10,7 +10,6 @@ MULT:
     
     addi fp, sp, 16
     
-# r3 = r1 * r2 (r2 pequeno)
 mov r7, r0
 MULT_LOOP:
     beq r19, r0, MULT_END
