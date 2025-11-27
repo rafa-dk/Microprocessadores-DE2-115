@@ -23,10 +23,6 @@ BUTTOM_ON:
     ori r10, r10, 0b10  # Habilita IRQ 1 (Botoes) preservando outras (Timer IRQ 0)
 	wrctl ienable, r10	#habilita INT no PB
 
-	#3. seta o bit PIE do processador
-	movi r9, 1
-	wrctl status, r9
-
     #Epilogo
     ldw ra, 12(sp)
     ldw fp, 8(sp)
@@ -56,10 +52,6 @@ BUTTOM_OFF:
     #2. desabilitar o respectivo no bit no ienable (IRQ 1) 
     movi r9, 0b0
     wrctl ienable, r9	#desabilita INT no PB
-
-    #3. limpa o bit PIE do processador
-    movi r9, 0
-    wrctl status, r9
 
     #Epilogo
     ldw ra, 12(sp)

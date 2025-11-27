@@ -24,11 +24,6 @@ STOP_ANIMACAO:
     andi  r6, r6, 0b11111110     # limpa bit 0
     wrctl ienable, r6
 
-    # 3. desabilitar todas as interrupções globais:
-    rdctl r6, status
-    andi  r6, r6, 0xFFFE        # zera bit PIE
-    wrctl status, r6
-
     # Epilogo
     ldw ra, 16(sp)
     ldw fp, 12(sp)
@@ -79,10 +74,6 @@ RESUME_ANIMACAO:
     rdctl r9, ienable
     ori r9, r9, 1       # Habilita IRQ 0 (Timer) preservando outras
 	wrctl ienable, r9	#habilita INT no PB
-
-	#3. seta o bit PIE do processador
-	movi r9, 1
-	wrctl status, r9
 
     # Epilogo
     ldw ra, 16(sp)

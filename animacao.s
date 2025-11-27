@@ -30,6 +30,10 @@ ARQANI:
     call RESUME_ANIMACAO
     call BUTTOM_ON
 
+    # Habilita interrupcoes globais (PIE)
+    movi r9, 1
+    wrctl status, r9
+
 ANIMACAO_LOOP:
     call UART
     movi r9, 0x2
@@ -42,6 +46,10 @@ ANIMACAO_LOOP:
     br ANIMACAO_LOOP
 
 FIM_ANIMACAO:
+    # Desabilita interrupcoes globais (PIE)
+    movi r9, 0
+    wrctl status, r9
+
     call STOP_ANIMACAO
     call BUTTOM_OFF
 
