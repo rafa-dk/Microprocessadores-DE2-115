@@ -1,4 +1,4 @@
-# Projeto---Microprocessadores
+# Aplicação prática da Matéria de Microprocessadores (DE2-115)
 
 Video demo das funcionalidades na placa DE2-115
 
