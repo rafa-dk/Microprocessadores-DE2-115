@@ -4,16 +4,32 @@ RTI
 .org 0x20
 
 #PROLOGO
-	addi sp, sp, -4
-	stw ra, (sp)
+#Salva contexto (registradores volateis que a ISR ou chamadas dentro dela podem modificar)
+	subi sp, sp, 80
+	stw ra, 76(sp)
+	stw fp, 72(sp)
+    stw r4, 68(sp)
+    stw r5, 64(sp)
+    stw r6, 60(sp)
+    stw r7, 56(sp)
+    stw r8, 52(sp)
+    stw r9, 48(sp)
+    stw r10, 44(sp)
+    stw r11, 40(sp)
+    stw r12, 36(sp)
+    #r15 e r16 sao usados como variaveis globais da animacao, nao salvamos para manter o estado
+
+	addi fp, sp, 80
 #--------------------------
 	rdctl et, ipending
 	beq et, r0, OTHER_EXCEPTIONS
 	subi ea, ea, 4
 	
+	andi r13, et, 2
+	bne r13, r0, BOTAO_IRQ
 	andi r13, et, 1 
-	beq r13, r0, OTHER_INTERRUPTS
-	call EXT_IRQ1
+	bne r13, r0, TIMER_IRQ
+	call OTHER_INTERRUPTS
 
 OTHER_INTERRUPTS:
 	br FIM_RTI
@@ -21,27 +37,94 @@ OTHER_INTERRUPTS:
 OTHER_EXCEPTIONS:
 #EPILOGO
 FIM_RTI:
-	ldw ra, (sp)
-	addi sp, sp, 4
+	#Restaura contexto
+	ldw ra, 76(sp)
+	ldw fp, 72(sp)
+    ldw r4, 68(sp)
+    ldw r5, 64(sp)
+    ldw r6, 60(sp)
+    ldw r7, 56(sp)
+    ldw r8, 52(sp)
+    ldw r9, 48(sp)
+    ldw r10, 44(sp)
+    ldw r11, 40(sp)
+    ldw r12, 36(sp)
+	addi sp, sp, 80
+	
 	eret
 
+#ROTINA TIMER
+TIMER_IRQ:
+    #Limpa o bit de timeout do timer
+    movia r10, 0x10002000
+    stwio r0, 0(r10)    #Escreve 0 no status para limpar o bit TO
+	movia r12, DIRECAO_ANIMACAO
+	ldw r12, (r12)
 
-#ROTINA KEY
-EXT_IRQ1:
+DIREITA:
+    movia r7, ORDEM_ANIMACAO
+    slli r8, r15, 2    #r8 = r15 * 4 (r20 ja tem 4)
+    add r7, r7, r8
+    ldw r7, (r7)
 
+    add r8, sp, r8      #r8 = sp + offset
+    stw r7, (r8)       #Salva o digito na pilha
+
+    addi r15, r15, 1    #Incrementa o contador de digitos
+
+    bne r15, r16, DIREITA #Se r15 nao eh 8, continua o loop
+
+    call DISPLAY
+	mov r15, r0
+	beq r12, r0, LEFT
 	
+RIGHT:
+    call SHIFT_R
+	br FIM_RTI
+LEFT:
+	call SHIFT_L
+    br FIM_RTI
 
-FIM_KEY:
-	ret
+BOTAO_IRQ:
+	movia r9, BOTOES	#BOTOES
+
+	#Key 1 ou Key 2
+	ldwio r11, (r9)
+	andi r12, r11, 0b100	#Eh Key 2?
+	bne r12, r0, BOTAO_2
+
+	movia r11, DIRECAO_ANIMACAO
+	ldw r12, (r11)
+	xori r12, r12, 1
+	stw r12, (r11)
+	ldw r12, (r11)
+
+	stwio r0, (r9)	#Limpa edge capture
+	br FIM_RTI
+
+BOTAO_2:
+	movia r11, STOP_BUTTON_ANIMACAO
+	ldw r12, (r11)
+	xori r12, r12, 1
+	stw r12, (r11)
+	ldw r12, (r11)
+
+	stwio r0, (r9)	#Limpa edge capture
+
+	beq	r12, r0, STOP
+
+RESUME:
+	call RESUME_ANIMACAO
+	br FIM_RTI
+
+STOP:
+	call STOP_ANIMACAO
+	br FIM_RTI
 
 
 /****
 MAIN
 ****/
-
-.equ DATA, 0x0000
-.equ CONTROL, 0x0004
-.equ STACK, 0x10000
 
 .global _start
 
@@ -49,88 +132,60 @@ _start:
 	#Inicializa o Stack Pointer (sp)
 	movia sp, STACK
 	mov fp, sp
-	movia r10, 0x10001000
-/*
-#habilitar interrupcoes
-	#1. setar timer
-	#-> interrupt timer (0x10002000)
-	movia r8, 0x10002000	#timer
-	movia r9, 25000000	
-	
-	andi r6, r9, 0xFFFF
-	stwio r6, 8(r8)		#low
+	movia r10, UART_BASE
+	mov r5, r0
+	movi r7, 20
 
-	srli r6, r9, 16
-	stwio r6, 12(r8)		#high
+INICIO:
 
-	movia r9, 0b111
-	stwio r9, 4(r8)
+WSPACE:
+	ldwio r12, CONTROL(r10)		#Leitura de control
+	mov r11, r12		
+	andhi r11, r11, 0xffff		#Mascara para wspace
+	beq r11, r0, WSPACE		#Caso !wspace retorna
+	movia r4, INICIO_CHAR
+	slli r6, r5, 2
+	add r4, r4, r6
+	ldw r4, (r4)			#Carrega caracter inicio
+	stwio r4, DATA(r10)		#Escreve dado em terminal do altera
+	addi r5, r5, 1
+	bne r5, r7, WSPACE
+	#Escrever caracter na memoria
 
-	#2. setar o respectivo no bit no ienable (IRQ 1) 
-	movia r9, 0b1
-	wrctl ienable, r9	#habilita INT no PB
 
-	#3. seta o bit PIE do processador
-	movi r9, 1
-	wrctl status, r9*/
 
 POLLING:
 
 	call UART
 	
-	addi r4, r4,-0x30		#converte para decimal
-	beq r4, r0, LED
+	addi r4, r4,-0x30		#Converte para decimal
+	beq r4, r0, LED_VER
 
 	addi r8, r0, 1
-	beq r4, r8, TRIANGULAR
+	beq r4, r8, TRIANGULAR_VER
 
 	addi r8, r0, 2
-	beq r4, r8, ANIMACAO
+	beq r4, r8, ANIMACAO_VER
 
 	br POLLING
 
 
-LED:
-	call ARQLED
+LED_VER:
+	call LED
 	br POLLING
 
-TRIANGULAR:
+TRIANGULAR_VER:
 	call UART
-	addi r4, r4,-0x30		#converte para decimal
+	addi r4, r4,-0x30		#Converte para decimal
 	bne r4, r0, POLLING
-	call ARQTRI
+	call ESPACO
+	call TRIANGULAR
 	br POLLING
 
-ANIMACAO:
-	call ARQANI
+ANIMACAO_VER:
+	call UART
+	addi r4, r4,-0x30		#Converte para decimal
+	bne r4, r0, POLLING
+	call ESPACO
+	call ANIMACAO
 	br POLLING
-
-
-
-/*
-	1/2s -> 25.000.000
-	
-	movia r8, 0x10002000	#timer
-	movia r9, 25000000	
-	
-	andi r10, r9, 0xFFFF
-	swtio r10, 8(r8)		#low
-
-	srli r10, r9, 16
-	stwio r10, 12(r8)	#high
-
-vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-	stwio r9, UART
-_start:
-
-	andi r9, r10, 0xFF
-
-	stwio r9, UART
-
-	movia r11, LAST_CHAR
-	stw r9, (r11)	#salva ultimo char na memoria
-
-LAST_CHAR:
-.word 00
-
-*/

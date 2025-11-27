@@ -1,7 +1,6 @@
-/****
-MAIN
-****/
-.equ DISPLAYS_BASE, 0x10000020  #Endereco base dos displays de 7 segmentos
+/*******
+DISPLAY
+*******/
 
 .global DISPLAY
 
@@ -17,7 +16,7 @@ Argumentos (passados por convenção de 'triangular.s'):
 Registradores usados: r4, r5, r6, r7, r8, r9, r10
  */
 DISPLAY:
-    # --- Salva os registradores que serão usados ---
+    #Prologo
     subi sp, sp, 40
     stw ra, 36(sp)
     stw fp, 32(sp)
@@ -43,7 +42,7 @@ DISPLAY_LOOP:
 
     #Calcula o endereco do digito no buffer (r4)
     movi r6, 4              #Carrega 4 em r6 para multiplicacao
-    mul r5, r10, r6         #Calcula o offset para o digito atual (0*4, 1*4, ...)
+    slli r5, r10, 2         #Calcula o offset para o digito atual (0*4, 1*4, ...)
     add r5, fp, r5          #SOMA r4 (base) e r5 (offset) para obter o endereco final do digito
     ldw r7, (r5)           #r7 = carrega o digito (ex: 3)
 
@@ -52,11 +51,11 @@ DISPLAY_LOOP:
     add r8, r8, r7          #Adiciona o digito como um indice
     ldb r8, (r8)           #Carrega o byte do padrao de 7 segmentos
 
-    # Verifica se eh Low (0-3) ou High (4-7)
+    #Verifica se eh Low (0-3) ou High (4-7)
     blt r10, r6, PROCESS_LOW
 
 PROCESS_HIGH:
-    subi r5, r10, 4         # Indice relativo (0-3)
+    subi r5, r10, 4         #Indice relativo (0-3)
     slli r5, r5, 3     
     sll r8, r8, r5
     or r12, r12, r8
@@ -78,6 +77,7 @@ WRITE_DISPLAYS:
     stwio r12, 16(r9)       #Escreve nos displays 4-7 (offset 0x10)
 
 END_DISPLAY:
+    #Epilogo
     ldw ra, 36(sp)
     ldw fp, 32(sp)
     ldw r5, 28(sp)
@@ -92,6 +92,3 @@ END_DISPLAY:
 
     ret
 
-SETE_SEG:
-.byte 0x3F, 0x06, 0x5B, 0x4F, 0x66, 0x6D, 0x7D, 0x07, 0x7F, 0x6F, 0x00
-#Caracteres para o display: 0,1,2,3,4,5,6,7,8,9, space
